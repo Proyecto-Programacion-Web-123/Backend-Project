@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:9.4
+    container_name: backend #CAMBIAR NOMBRE DE CONTENEDOR
+    environment:
+      MYSQL_ROOT_PASSWORD: 7465726D696E61  #CONTRASEÑA PARA LA BASE DE DATOS
+      MYSQL_DATABASE: db_test #NOMBRE DE LA BASE DE DATOS
+    ports:
+      - "3307:3306" #PUERTO A UTILIZAR
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+
+volumes:
+  mysql_data:
+
+    #COMANDO PARA LEVANTAR CONTENEDOR docker compose up -d
