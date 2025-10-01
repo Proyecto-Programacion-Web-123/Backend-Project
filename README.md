@@ -23,7 +23,7 @@ Update the password (MYSQL_ROOT_PASSWORD) and database name (MYSQL_DATABASE) acc
 
 Start MySQL:
 
-docker-compose up -d
+docker compose up -d
 
 
 Check if the container is running:
