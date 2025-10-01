@@ -55,10 +55,10 @@ jobs:
           done
 
       - name: Run migrations
-        run: npx knex migrate:latest
+        run: npx knex migrate:latest --env test
 
       - name: Run seeds
-        run: npx knex seed:run
+        run: npx knex seed:run --env test
 
       - name: Run tests
         run: npm test
