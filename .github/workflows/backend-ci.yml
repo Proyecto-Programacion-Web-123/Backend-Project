@@ -1,0 +1,64 @@
+name: Backend CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+    paths:
+      - '**'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:9.4
+        env:
+          MYSQL_ROOT_PASSWORD: 7465726D696E61
+          MYSQL_DATABASE: term
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3307
+      DB_USER: root
+      DB_PASSWORD: 7465726D696E61
+      DB_NAME: term
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -P 3307 -u root -p7465726D696E61 && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Run migrations
+        run: npx knex migrate:latest
+
+      - name: Run seeds
+        run: npx knex seed:run
+
+      - name: Run tests
+        run: npm test
